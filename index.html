@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>神社検定クイズ</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    .question { font-size: 1.2em; margin-bottom: 10px; }
+    button { display: block; margin: 5px 0; padding: 10px; width: 100%; }
+    .result { margin-top: 20px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="question">
+    伊勢神宮の内宮に祀られている神は誰か？
+  </div>
+  <button onclick="checkAnswer(1)">1. 天照大御神</button>
+  <button onclick="checkAnswer(2)">2. 豊受大神</button>
+  <button onclick="checkAnswer(3)">3. 大国主命</button>
+  <button onclick="checkAnswer(4)">4. 菅原道真</button>
+  <div class="result" id="result"></div>
+
+  <script>
+    function checkAnswer(choice) {
+      const correct = 1;
+      const result = document.getElementById('result');
+      if (choice === correct) {
+        result.textContent = "正解！すばらしい👏";
+      } else {
+        result.textContent = "不正解… 正解は「天照大御神」だよ。";
+      }
+    }
+  </script>
+</body>
+</html>
