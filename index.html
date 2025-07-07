@@ -5,32 +5,109 @@
   <title>神社検定クイズ</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body { font-family: sans-serif; padding: 20px; }
-    .question { font-size: 1.2em; margin-bottom: 10px; }
-    button { display: block; margin: 5px 0; padding: 10px; width: 100%; }
-    .result { margin-top: 20px; font-weight: bold; }
+    body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: auto; }
+    .group-text { font-weight: bold; margin-top: 20px; white-space: pre-wrap; }
+    .question { margin-top: 10px; font-weight: bold; }
+    .options button { display: block; margin: 5px 0; padding: 10px; width: 100%; }
+    .explanation { color: green; margin-top: 10px; }
+    .score { font-weight: bold; font-size: 1.2em; margin-top: 20px; }
   </style>
 </head>
 <body>
-  <div class="question">
-    伊勢神宮の内宮に祀られている神は誰か？
-  </div>
-  <button onclick="checkAnswer(1)">1. 天照大御神</button>
-  <button onclick="checkAnswer(2)">2. 豊受大神</button>
-  <button onclick="checkAnswer(3)">3. 大国主命</button>
-  <button onclick="checkAnswer(4)">4. 菅原道真</button>
-  <div class="result" id="result"></div>
+  <h1>神社検定クイズ（試作版）</h1>
+  <div id="quiz"></div>
+  <div class="score" id="score"></div>
 
   <script>
-    function checkAnswer(choice) {
-      const correct = 1;
-      const result = document.getElementById('result');
-      if (choice === correct) {
-        result.textContent = "正解！すばらしい👏";
-      } else {
-        result.textContent = "不正解… 正解は「天照大御神」だよ。";
+    const quizData = [
+      {
+        groupId: "j01201001",
+        groupText: "八神殿に関する以下の文章を読んで問１から問４までの設問に答えてください。\n　律令制における...",
+        questions: [
+          {
+            qnum: "問１",
+            question: "【ア】に入る言葉として正しいものを選んでください。",
+            options: ["御巫（みかんなぎ）", "坐摩（いかすりの）巫", "御門（みかどの）巫", "生嶋（いくしまの）巫"],
+            answer: 0,
+            explanation: "『神社のいろは要語集　祭祀編』「八神殿」"
+          },
+          {
+            qnum: "問２",
+            question: "下線部の八神殿の説明として間違っているものを選んでください。",
+            options: [
+              "八神殿は神籬磐境の神勅に基づいて建てられた神殿とされている。",
+              "宮中に八神殿が建てられたのは平城京からのことと推測されている。",
+              "八神殿は、平安京では、神祇官の西院（斎院）内の西築垣側に一郭を占めていた。",
+              "『延喜式』には、その祭祀の奉仕者が替わるたびに造替することが規定されていた。"
+            ],
+            answer: 1,
+            explanation: "『神社のいろは要語集　祭祀編』「八神殿」"
+          }
+        ]
       }
+    ];
+
+    let currentGroup = 0;
+    let currentQuestion = 0;
+    let correctCount = 0;
+
+    function loadQuestion() {
+      const quiz = document.getElementById("quiz");
+      quiz.innerHTML = "";
+      const group = quizData[currentGroup];
+      if (currentQuestion === 0) {
+        const gText = document.createElement("div");
+        gText.className = "group-text";
+        gText.textContent = group.groupText;
+        quiz.appendChild(gText);
+      }
+
+      const qData = group.questions[currentQuestion];
+      const qDiv = document.createElement("div");
+      qDiv.className = "question";
+      qDiv.textContent = `${qData.qnum} ${qData.question}`;
+      quiz.appendChild(qDiv);
+
+      const optionsDiv = document.createElement("div");
+      optionsDiv.className = "options";
+      qData.options.forEach((opt, idx) => {
+        const btn = document.createElement("button");
+        btn.textContent = opt;
+        btn.onclick = () => checkAnswer(idx, qData);
+        optionsDiv.appendChild(btn);
+      });
+      quiz.appendChild(optionsDiv);
     }
+
+    function checkAnswer(choice, qData) {
+      const quiz = document.getElementById("quiz");
+      const result = document.createElement("div");
+      result.className = "explanation";
+      if (choice === qData.answer) {
+        result.textContent = "正解！ " + qData.explanation;
+        correctCount++;
+      } else {
+        result.textContent = "不正解… " + qData.explanation;
+      }
+      quiz.appendChild(result);
+
+      setTimeout(() => {
+        currentQuestion++;
+        if (currentQuestion < quizData[currentGroup].questions.length) {
+          loadQuestion();
+        } else {
+          showScore();
+        }
+      }, 1500);
+    }
+
+    function showScore() {
+      const scoreDiv = document.getElementById("score");
+      const total = quizData[currentGroup].questions.length;
+      scoreDiv.textContent = `あなたのスコア：${correctCount}問 / ${total}問中`;
+    }
+
+    loadQuestion();
   </script>
 </body>
 </html>
