@@ -2,11 +2,153 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>神社検定問題集（第12回対応）</title>
+  <title>神社検定問題集 第12回</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: auto; }
+    h1, h2 { text-align: center; }
+    .question-block { margin-top: 20px; padding: 10px; border: 1px solid #ccc; border-radius: 8px; }
+    .question-text { font-weight: bold; }
+    .options button { display: block; margin: 5px 0; padding: 10px; width: 100%; }
+    .result { margin-top: 15px; font-weight: bold; }
+    .hidden { display: none; }
+    .summary { margin-top: 30px; font-size: 1.1em; font-weight: bold; }
+  </style>
 </head>
 <body>
-  <h1>神社検定Webクイズアプリ（第12回）</h1>
-  <p>このアプリは完成しています。今すぐGitHub Pagesにアップロードして実行できます。</p>
+  <h1>神社検定問題集</h1>
+  <div id="start-screen">
+    <p>お名前を入力してください：</p>
+    <input type="text" id="username" placeholder="例：たけしま">
+    <p>試験回を選んでください：</p>
+    <select id="exam-round">
+      <option value="第12回">第12回</option>
+    </select>
+    <p>出題数を選んでください：</p>
+    <select id="question-count">
+      <option value="10">10問</option>
+      <option value="50">50問</option>
+      <option value="100">100問</option>
+    </select>
+    <br><br>
+    <button onclick="startQuiz()">開始する</button>
+  </div>
+
+  <div id="quiz-screen" class="hidden">
+    <div id="quiz-container"></div>
+    <div class="summary" id="summary"></div>
+  </div>
+
+<script>
+const quizData = [
+  {
+    groupId: "g001",
+    groupText: "八神殿について以下の設問に答えなさい。",
+    questions: [
+      {
+        qnum: "問1",
+        question: "【ア】に入る言葉として正しいものを選んでください。",
+        options: ["御巫", "坐摩巫", "御門巫", "生嶋巫"],
+        answer: 0,
+        explanation: "正解は御巫です。",
+        tag: "八神殿"
+      },
+      {
+        qnum: "問2",
+        question: "八神殿の説明として間違っているものは？",
+        options: [
+          "神籬磐境の神勅に基づく",
+          "平城京から存在した",
+          "平安京では西院にあった",
+          "奉仕者が変わるたびに造替"
+        ],
+        answer: 1,
+        explanation: "平城京以前には存在していません。",
+        tag: "八神殿"
+      }
+    ]
+  }
+];
+
+let username = "";
+let current = 0;
+let score = 0;
+let total = 0;
+let incorrectTags = [];
+
+function startQuiz() {
+  username = document.getElementById("username").value.trim();
+  if (!username) return alert("名前を入力してください");
+
+  const count = parseInt(document.getElementById("question-count").value);
+  const selectedGroups = quizData.slice(0, count); // 簡易的に先頭から取得
+  const container = document.getElementById("quiz-container");
+  container.innerHTML = "";
+  score = 0;
+  total = 0;
+  incorrectTags = [];
+
+  selectedGroups.forEach(group => {
+    const groupDiv = document.createElement("div");
+    groupDiv.className = "question-block";
+
+    const groupText = document.createElement("div");
+    groupText.textContent = group.groupText;
+    groupDiv.appendChild(groupText);
+
+    group.questions.forEach(q => {
+      total++;
+      const qDiv = document.createElement("div");
+      qDiv.className = "question-text";
+      qDiv.textContent = q.qnum + ": " + q.question;
+      groupDiv.appendChild(qDiv);
+
+      q.options.forEach((opt, idx) => {
+        const btn = document.createElement("button");
+        btn.textContent = opt;
+        btn.onclick = () => {
+          if (btn.disabled) return;
+          if (idx === q.answer) {
+            btn.style.backgroundColor = "lightgreen";
+            score++;
+          } else {
+            btn.style.backgroundColor = "salmon";
+            incorrectTags.push(q.tag);
+          }
+          const explanation = document.createElement("div");
+          explanation.className = "result";
+          explanation.textContent = q.explanation;
+          groupDiv.appendChild(explanation);
+          Array.from(groupDiv.querySelectorAll("button")).forEach(b => b.disabled = true);
+          updateSummary();
+        };
+        groupDiv.appendChild(btn);
+      });
+    });
+
+    container.appendChild(groupDiv);
+  });
+
+  document.getElementById("start-screen").classList.add("hidden");
+  document.getElementById("quiz-screen").classList.remove("hidden");
+}
+
+function updateSummary() {
+  const percent = Math.round((score / total) * 100);
+  let summary = `スコア：${score} / ${total}（${percent}%） → `;
+  summary += percent >= 70 ? "合格 🎉" : "不合格 ❌";
+
+  if (incorrectTags.length) {
+    const tagCounts = {};
+    incorrectTags.forEach(tag => tagCounts[tag] = (tagCounts[tag] || 0) + 1);
+    summary += "\n苦手ジャンル：";
+    for (const tag in tagCounts) {
+      summary += ` ${tag}(${tagCounts[tag]}問)`;
+    }
+  }
+
+  document.getElementById("summary").textContent = summary;
+}
+</script>
 </body>
 </html>
