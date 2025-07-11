@@ -37,8 +37,9 @@ function loadQuestions() {
   currentRound = localStorage.getItem("examRound");
   const count = parseInt(localStorage.getItem("questionCount"));
 
+  const currentRound = localStorage.getItem("examRound"); 
   const roundNumber = currentRound.replace("第", "").replace("回", "");
-fetch(`questions_${roundNumber}.json`)
+  fetch(`questions_${roundNumber}.json`)
     .then((res) => res.json())
     .then((data) => {
       questions = [];
