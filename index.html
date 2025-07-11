@@ -1,11 +1,34 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <title>神社検定問題集</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>神社検定問題集</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>神社検定問題集（第12回）</h1>
-    <p>これは完全版のテストです。</p>
+  <div class="container">
+    <h1>神社検定問題集</h1>
+    <form id="startForm">
+      <label for="username">名前：</label>
+      <input type="text" id="username" name="username" required placeholder="例：田中"><br><br>
+
+      <label for="examRound">試験回：</label>
+      <select id="examRound" name="examRound">
+        <option value="12">第12回</option>
+      </select><br><br>
+
+      <label for="questionCount">出題数：</label>
+      <select id="questionCount" name="questionCount">
+        <option value="10">10問</option>
+        <option value="50">50問</option>
+        <option value="100">100問</option>
+      </select><br><br>
+
+      <button type="submit">開始</button>
+    </form>
+  </div>
+  <script src="main.js"></script>
 </body>
 </html>
