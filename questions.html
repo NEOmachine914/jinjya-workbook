@@ -1,22 +1,26 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>問題に答える</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>神社検定問題集 - 問題</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>問題に答える</h1>
-  <div class="question-container">
-    <div id="common-text" class="common-text"></div>
-    <div id="question-text" class="question-box"></div>
-    <ul id="choices-list"></ul>
-    <input type="text" id="answer-input" placeholder="ここに答えを入力">
+  <div id="question-container" class="container">
+    <div id="question-number"></div>
+    <div id="common-passage" class="common-passage"></div>
+    <div id="question-text" class="question-text"></div>
+    <div id="options" class="options"></div>
+    <button id="next-button" class="btn" disabled>次へ</button>
   </div>
-  <button id="next-button" disabled>次へ</button>
-
-  <!-- ✅ JavaScriptはbodyの最後で読み込み -->
+  <script src="questions_12.js"></script>
   <script src="main.js"></script>
+  <script>
+    window.onload = function () {
+      loadQuestions();
+    };
+  </script>
 </body>
 </html>
