@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -7,28 +6,23 @@
   <title>結果発表</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body id="page-results">
   <div class="container">
     <h1>結果発表</h1>
-    <div id="score-summary">
+    <div id="score-summary" class="result-box">
       <p><strong>名前:</strong> <span id="result-username"></span></p>
       <p><strong>正解数:</strong> <span id="correct-count"></span> / <span id="total-count"></span></p>
       <p><strong>正解率:</strong> <span id="accuracy-rate"></span>%</p>
-      <p><strong>判定:</strong> <span id="result-judgment"></span></p>
+      <p><strong>判定:</strong> <span id="result-judgment" class="judgment"></span></p>
     </div>
 
-    <div id="mistake-summary">
-      <h2>不正解の属性</h2>
-      <ul id="wrong-attributes"></ul>
+    <div id="mistake-summary" class="result-box">
+      <h2>間違えた問題</h2>
+      <div id="wrong-questions-list"></div>
     </div>
-
-    <div id="weakness-analysis">
-      <h2>累積の苦手分野（同じ名前で複数回受験した場合）</h2>
-      <ul id="cumulative-weaknesses"></ul>
-    </div>
-
-    <button onclick="location.href='index.html'">トップに戻る</button>
+    
+    <button id="retry-button">トップに戻る</button>
   </div>
-  <script src="main.js"></script>
+  <script src="main.js" defer></script>
 </body>
 </html>
