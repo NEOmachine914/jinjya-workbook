@@ -8,26 +8,43 @@
 <body>
     <div class="container">
         <h1>神社検定問題集</h1>
+        <form id="start-form">
+            <label for="username">名前：</label>
+            <input type="text" id="username" name="username" required placeholder="例：田中">
 
-        <label for="username">名前：</label>
-        <input type="text" id="username" placeholder="例：田中">
+            <label for="examRound">試験回：</label>
+            <select id="examRound" name="examRound" required>
+                <option value="12">第12回</option>
+                <!-- 今後の追加対応用 -->
+            </select>
 
-        <label for="examRound">試験回：</label>
-        <select id="examRound">
-            <option value="12">第12回</option>
-            <!-- 必要に応じて他の回も追加 -->
-        </select>
+            <label for="questionCount">出題数：</label>
+            <select id="questionCount" name="questionCount" required>
+                <option value="10">10問</option>
+                <option value="50">50問</option>
+                <option value="100">100問</option>
+            </select>
 
-        <label for="questionCount">出題数：</label>
-        <select id="questionCount">
-            <option value="10">10問</option>
-            <option value="50">50問</option>
-            <option value="100">100問</option>
-        </select>
-
-        <button id="start-button">開始</button>
+            <button type="submit">開始</button>
+        </form>
     </div>
 
-    <script src="main.js"></script>
+    <script>
+        document.getElementById("start-form").addEventListener("submit", function (e) {
+            e.preventDefault();
+            const username = document.getElementById("username").value.trim();
+            const examRound = document.getElementById("examRound").value;
+            const questionCount = document.getElementById("questionCount").value;
+
+            if (!username) {
+                alert("名前を入力してください。");
+                return;
+            }
+
+            // ページ遷移（GETパラメータ付き）
+            const query = `questions.html?username=${encodeURIComponent(username)}&examRound=${encodeURIComponent(examRound)}&questionCount=${encodeURIComponent(questionCount)}`;
+            window.location.href = query;
+        });
+    </script>
 </body>
 </html>
