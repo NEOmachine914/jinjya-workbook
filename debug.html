@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>神社検定問題集</title>
+    <script>
+        async function loadQuestions() {
+            const params = new URLSearchParams(window.location.search);
+            const round = params.get('examRound');
+            const url = `questions_${round}.json`;
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('ネットワークエラー');
+                const data = await response.json();
+                document.getElementById("status").textContent = `読み込み成功：${data.length}問`;
+            } catch (err) {
+                document.getElementById("status").textContent = `問題データの読み込みに失敗しました：${err.message}`;
+            }
+        }
+    </script>
+</head>
+<body onload="loadQuestions()">
+    <h1>神社検定問題表示テスト</h1>
+    <p id="status">読み込み中...</p>
+</body>
+</html>
