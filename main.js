@@ -1,56 +1,68 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const params = new URLSearchParams(window.location.search);
-    const username = params.get('username');
-    const examRound = params.get('examRound');
-    const questionCount = parseInt(params.get('questionCount'), 10);
+function getQueryParam(param) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(param);
+}
 
-    if (!username || !examRound || !questionCount) {
-        document.body.innerHTML = '<p>必要なパラメータが不足しています。</p>';
+function showQuestion(questionData, index) {
+    const questionBox = document.getElementById("question-box");
+    const question = questionData[index];
+
+    if (!question) {
+        window.location.href = "results.html";
         return;
     }
 
-    const questionFile = `questions_${examRound}.json`;
+    const html = `
+        <div class="question-title">第${index + 1}問</div>
+        <div class="question-text">${question.q}</div>
+        <div class="choices">
+            ${question.choices.map((choice, i) => `
+                <label><input type="radio" name="choice" value="${i}">${choice}</label>
+            `).join("")}
+        </div>
+        <button onclick="submitAnswer(${question.correct})">次へ</button>
+    `;
+    questionBox.innerHTML = html;
+}
 
-    fetch(questionFile)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('問題データの読み込みに失敗しました。');
-            }
-            return response.json();
+function submitAnswer(correct) {
+    const choices = document.getElementsByName("choice");
+    let selected = -1;
+    for (let i = 0; i < choices.length; i++) {
+        if (choices[i].checked) {
+            selected = parseInt(choices[i].value);
+            break;
+        }
+    }
+
+    if (selected === -1) {
+        alert("選択肢を選んでください");
+        return;
+    }
+
+    const result = {
+        question: currentQuestionIndex + 1,
+        correct: correct === selected,
+    };
+    answers.push(result);
+    currentQuestionIndex++;
+    showQuestion(questions, currentQuestionIndex);
+}
+
+let questions = [];
+let currentQuestionIndex = 0;
+let answers = [];
+
+document.addEventListener("DOMContentLoaded", () => {
+    const examRound = getQueryParam("examRound") || "12";
+    fetch(`questions_${examRound}.json`)
+        .then((response) => response.json())
+        .then((data) => {
+            questions = data;
+            showQuestion(questions, currentQuestionIndex);
         })
-        .then(data => {
-            if (!Array.isArray(data) || data.length === 0) {
-                throw new Error('問題データが空です。');
-            }
-
-            const selectedQuestions = data.slice(0, questionCount);
-            const container = document.getElementById('question-container');
-            selectedQuestions.forEach((question, index) => {
-                const questionElement = document.createElement('div');
-                questionElement.innerHTML = `
-                    <h3>問${index + 1}</h3>
-                    <p>${question.q}</p>
-                    ${question.a.map((answer, i) => `
-                        <label><input type="radio" name="q${index}" value="${i}">${answer}</label><br>
-                    `).join('')}
-                `;
-                container.appendChild(questionElement);
-            });
-
-            const submitBtn = document.getElementById('submit-btn');
-            submitBtn.style.display = 'block';
-            submitBtn.addEventListener('click', () => {
-                let correct = 0;
-                selectedQuestions.forEach((question, index) => {
-                    const selected = document.querySelector(`input[name="q${index}"]:checked`);
-                    if (selected && parseInt(selected.value) === question.c) {
-                        correct++;
-                    }
-                });
-                window.location.href = `results.html?username=${username}&examRound=${examRound}&questionCount=${questionCount}&correct=${correct}`;
-            });
-        })
-        .catch(error => {
-            document.getElementById('question-container').innerHTML = `<p>${error.message}</p>`;
+        .catch((error) => {
+            console.error("読み込み失敗:", error);
+            document.getElementById("question-box").innerHTML = "問題データの読み込みに失敗しました";
         });
 });
