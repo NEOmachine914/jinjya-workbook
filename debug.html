@@ -11,7 +11,7 @@
 
             try {
                 const response = await fetch(url);
-                if (!response.ok) throw new Error('ネットワークエラー');
+                if (!response.ok) throw new Error('ネットワークエラー ');
                 const data = await response.json();
                 document.getElementById("status").textContent = `読み込み成功：${data.length}問`;
             } catch (err) {
