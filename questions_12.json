@@ -162,7 +162,7 @@
   },
   {
     "group_id": "j01201004",
-    "common_text": NaN,
+    "common_text": null,
     "questions": [
       {
         "question_id": 12,
@@ -181,7 +181,7 @@
   },
   {
     "group_id": "j01201005",
-    "common_text": NaN,
+    "common_text": null,
     "questions": [
       {
         "question_id": 13,
@@ -355,7 +355,7 @@
   },
   {
     "group_id": "j01201008",
-    "common_text": NaN,
+    "common_text": null,
     "questions": [
       {
         "question_id": 25,
@@ -406,7 +406,7 @@
   },
   {
     "group_id": "j01201010",
-    "common_text": NaN,
+    "common_text": null,
     "questions": [
       {
         "question_id": 28,
@@ -425,7 +425,7 @@
   },
   {
     "group_id": "j01201011",
-    "common_text": NaN,
+    "common_text": null,
     "questions": [
       {
         "question_id": 29,
@@ -676,7 +676,7 @@
   },
   {
     "group_id": "j01201016",
-    "common_text": NaN,
+    "common_text": null,
     "questions": [
       {
         "question_id": 46,
@@ -1222,7 +1222,7 @@
   },
   {
     "group_id": "j01201029",
-    "common_text": NaN,
+    "common_text": null,
     "questions": [
       {
         "question_id": 82,
@@ -1241,7 +1241,7 @@
   },
   {
     "group_id": "j01201030",
-    "common_text": NaN,
+    "common_text": null,
     "questions": [
       {
         "question_id": 83,
@@ -1260,7 +1260,7 @@
   },
   {
     "group_id": "j01201031",
-    "common_text": NaN,
+    "common_text": null,
     "questions": [
       {
         "question_id": 84,
@@ -1356,7 +1356,7 @@
   },
   {
     "group_id": "j01201034",
-    "common_text": NaN,
+    "common_text": null,
     "questions": [
       {
         "question_id": 90,
@@ -1375,7 +1375,7 @@
   },
   {
     "group_id": "j01201035",
-    "common_text": NaN,
+    "common_text": null,
     "questions": [
       {
         "question_id": 91,
@@ -1394,7 +1394,7 @@
   },
   {
     "group_id": "j01201036",
-    "common_text": NaN,
+    "common_text": null,
     "questions": [
       {
         "question_id": 92,
@@ -1413,7 +1413,7 @@
   },
   {
     "group_id": "j01201037",
-    "common_text": NaN,
+    "common_text": null,
     "questions": [
       {
         "question_id": 93,
@@ -1432,7 +1432,7 @@
   },
   {
     "group_id": "j01201038",
-    "common_text": NaN,
+    "common_text": null,
     "questions": [
       {
         "question_id": 94,
