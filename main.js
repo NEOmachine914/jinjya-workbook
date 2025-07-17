@@ -1,68 +1,56 @@
-// questions.html側の処理
-window.addEventListener("DOMContentLoaded", function () {
-    const urlParams = new URLSearchParams(window.location.search);
-    const username = urlParams.get("username");
-    const examRound = urlParams.get("examRound");
-    const questionCount = parseInt(urlParams.get("questionCount"), 10);
+document.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const username = params.get('username');
+    const examRound = params.get('examRound');
+    const questionCount = parseInt(params.get('questionCount'), 10);
 
-    if (!username || !examRound || isNaN(questionCount)) {
-        window.location.href = "index.html";
+    if (!username || !examRound || !questionCount) {
+        document.body.innerHTML = '<p>必要なパラメータが不足しています。</p>';
         return;
     }
 
-    // 試しにコンソールに表示
-    console.log("受け取ったパラメータ:", {
-        username,
-        examRound,
-        questionCount
-    });
+    const questionFile = `questions_${examRound}.json`;
 
-    // 問題jsonの読み込み
-    fetch(`questions_${examRound}.json`)
-        .then(response => response.json())
+    fetch(questionFile)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('問題データの読み込みに失敗しました。');
+            }
+            return response.json();
+        })
         .then(data => {
-            const questions = shuffleArray(data).slice(0, questionCount);
-            startQuiz(questions);
+            if (!Array.isArray(data) || data.length === 0) {
+                throw new Error('問題データが空です。');
+            }
+
+            const selectedQuestions = data.slice(0, questionCount);
+            const container = document.getElementById('question-container');
+            selectedQuestions.forEach((question, index) => {
+                const questionElement = document.createElement('div');
+                questionElement.innerHTML = `
+                    <h3>問${index + 1}</h3>
+                    <p>${question.q}</p>
+                    ${question.a.map((answer, i) => `
+                        <label><input type="radio" name="q${index}" value="${i}">${answer}</label><br>
+                    `).join('')}
+                `;
+                container.appendChild(questionElement);
+            });
+
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.style.display = 'block';
+            submitBtn.addEventListener('click', () => {
+                let correct = 0;
+                selectedQuestions.forEach((question, index) => {
+                    const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                    if (selected && parseInt(selected.value) === question.c) {
+                        correct++;
+                    }
+                });
+                window.location.href = `results.html?username=${username}&examRound=${examRound}&questionCount=${questionCount}&correct=${correct}`;
+            });
         })
         .catch(error => {
-            console.error("問題jsonの読み込みでエラー:", error);
+            document.getElementById('question-container').innerHTML = `<p>${error.message}</p>`;
         });
 });
-
-function shuffleArray(array) {
-    const copied = array.slice();
-    for (let i = copied.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [copied[i], copied[j]] = [copied[j], copied[i]];
-    }
-    return copied;
-}
-
-function startQuiz(questions) {
-    const container = document.querySelector(".container");
-    container.innerHTML = "";
-
-    let currentIndex = 0;
-    showQuestion();
-
-    function showQuestion() {
-        if (currentIndex >= questions.length) {
-            container.innerHTML = `<h2>終了</h2>`;
-            return;
-        }
-
-        const q = questions[currentIndex];
-        container.innerHTML = `
-            <div>
-                <h2>Q${currentIndex + 1}: ${q.question}</h2>
-                ${q.choices.map((choice, idx) => `<p><input type="radio" name="choice" value="${idx}"> ${choice}</p>`).join("")}
-                <button id="next">次へ</button>
-            </div>
-        `;
-
-        document.getElementById("next").addEventListener("click", () => {
-            currentIndex++;
-            showQuestion();
-        });
-    }
-}
