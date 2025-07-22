@@ -1,23 +1,9 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <title>神社検定 - 出題</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <div class="container">
-    <h1>神社検定 - 問題演習</h1>
-    <div id="question-container">
-      <div id="question-number"></div>
-      <div id="question-text"></div>
-      <div id="choices"></div>
-    </div>
-    <div id="navigation">
-      <button id="next-button">次の問題へ</button>
-    </div>
-  </div>
+<script>
+  const username = sessionStorage.getItem('username');
+  const examRound = sessionStorage.getItem('examRound');
+  const questionCount = sessionStorage.getItem('questionCount');
 
-  <script src="main_questions.js"></script>
-</body>
-</html>
+  if (!username || !examRound || !questionCount) {
+    document.body.innerHTML = '<p>エラー：必要なデータが見つかりません。最初からやり直してください。</p>';
+  }
+</script>
