@@ -1,29 +1,23 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>神社検定問題集 - 問題</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <title>神社検定 - 出題</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-<body id="page-questions">
-  <div id="quiz-container" class="container">
-    <div id="progress-bar-container">
-        <div id="progress-bar"></div>
+<body>
+  <div class="container">
+    <h1>神社検定 - 問題演習</h1>
+    <div id="question-container">
+      <div id="question-number"></div>
+      <div id="question-text"></div>
+      <div id="choices"></div>
     </div>
-    <div id="question-box">
-        <p id="question-number"></p>
-        <div id="common-passage" class="common-text"></div>
-        <p id="question-text"></p>
+    <div id="navigation">
+      <button id="next-button">次の問題へ</button>
     </div>
-    <div id="options" class="options-grid"></div>
-    <div class="feedback-container">
-        <p id="feedback-message"></p>
-    </div>
-    <button id="next-button" class="btn">回答する</button>
   </div>
-  <!-- このページの動作はmain.jsに集約されているため、以下のscriptタグは不要です -->
-  <!-- <script src="questions_12.js"></script> -->
-  <script src="main.js" defer></script>
+
+  <script src="main_questions.js"></script>
 </body>
 </html>
