@@ -1,9 +1,27 @@
-<script>
-  const username = sessionStorage.getItem('username');
-  const examRound = sessionStorage.getItem('examRound');
-  const questionCount = sessionStorage.getItem('questionCount');
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>神社検定クイズ - 問題</title>
+</head>
+<body>
+  <div id="quiz-container">
+    <!-- クイズの内容がここに表示されます -->
+  </div>
 
-  if (!username || !examRound || !questionCount) {
-    document.body.innerHTML = '<p>エラー：必要なデータが見つかりません。最初からやり直してください。</p>';
-  }
-</script>
+  <script>
+    const username = sessionStorage.getItem('username');
+    const examRound = sessionStorage.getItem('examRound');
+    const questionCount = sessionStorage.getItem('questionCount');
+
+    if (!username || !examRound || !questionCount) {
+      document.body.innerHTML = '<p>エラー：必要なデータが見つかりません。最初からやり直してください。</p>';
+    } else {
+      document.getElementById('quiz-container').innerHTML = `
+        <h1>${username} さんの第${examRound}回試験（${questionCount}問）</h1>
+        <p>（ここに問題を表示）</p>
+      `;
+    }
+  </script>
+</body>
+</html>
