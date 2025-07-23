@@ -29,16 +29,14 @@
 
     async function loadQuestions() {
       try {
-        const response = await fetch(`main_questions_${examRound}.json`);
+        const response = await fetch(`questions_${examRound}.json`); // 修正済みファイル名
         if (!response.ok) throw new Error(`ファイルが見つからないか、読み込めませんでした`);
         const allQuestions = await response.json();
 
         if (!Array.isArray(allQuestions)) throw new Error("読み込んだデータが配列ではありません");
 
-        // 必要数だけ切り出し
         const selectedQuestions = allQuestions.slice(0, questionCount);
 
-        // JSON構造チェック
         for (let i = 0; i < selectedQuestions.length; i++) {
           const q = selectedQuestions[i];
           if (!q.question || !Array.isArray(q.choices) || typeof q.answer !== 'number') {
