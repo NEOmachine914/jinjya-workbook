@@ -13,7 +13,7 @@
   <script>
     const username = sessionStorage.getItem('username');
     const examRound = sessionStorage.getItem('examRound');
-    const questionCount = sessionStorage.getItem('questionCount');
+    const questionCount = parseInt(sessionStorage.getItem('questionCount'));
 
     // デバッグ用ログ出力
     console.log('username:', username);
@@ -28,7 +28,52 @@
     document.getElementById("quiz-container").innerHTML =
       `<p>${username} さん（第${examRound}回）の試験を ${questionCount} 問で開始します。</p>`;
 
-    // 今後ここで JSON を読み込んで出題開始予定
+    // JSONファイルを読み込み、問題を表示する処理
+    fetch(`questions_${examRound}.json`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('問題ファイルの読み込みに失敗しました');
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (!Array.isArray(data) || data.length === 0) {
+          throw new Error('問題データが不正です');
+        }
+        startQuiz(data.slice(0, questionCount));
+      })
+      .catch(error => {
+        document.getElementById("quiz-container").innerHTML =
+          `<p style="color:red;">${error.message}</p>`;
+        console.error(error);
+      });
+
+    function startQuiz(questions) {
+      const container = document.getElementById("quiz-container");
+      let currentIndex = 0;
+      let score = 0;
+
+      function showQuestion() {
+        const q = questions[currentIndex];
+        container.innerHTML = `<h2>問${currentIndex + 1}: ${q.question}</h2>` +
+          q.options.map((opt, i) =>
+            `<div><button onclick="checkAnswer(${i})">${opt}</button></div>`
+          ).join('');
+      }
+
+      window.checkAnswer = function(selectedIndex) {
+        const correct = questions[currentIndex].answer;
+        if (selectedIndex === correct) score++;
+        currentIndex++;
+        if (currentIndex < questions.length) {
+          showQuestion();
+        } else {
+          container.innerHTML = `<h2>終了！</h2><p>${username} さんの正解数：${score}/${questions.length}</p>`;
+        }
+      }
+
+      showQuestion();
+    }
   </script>
 </body>
 </html>
