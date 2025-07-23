@@ -29,24 +29,27 @@
 
     async function loadQuestions() {
       try {
-        const response = await fetch(`questions_${examRound}.json`);
-        if (!response.ok) throw new Error('ファイルが見つからないか、読み込めませんでした');
+        const response = await fetch(`main_questions_${examRound}.json`);
+        if (!response.ok) throw new Error(`ファイルが見つからないか、読み込めませんでした`);
         const allQuestions = await response.json();
 
-        // 必要数に切り出し
-        questions = allQuestions.slice(0, questionCount);
+        if (!Array.isArray(allQuestions)) throw new Error("読み込んだデータが配列ではありません");
+
+        // 必要数だけ切り出し
+        const selectedQuestions = allQuestions.slice(0, questionCount);
 
         // JSON構造チェック
-        for (let i = 0; i < questions.length; i++) {
-          const q = questions[i];
+        for (let i = 0; i < selectedQuestions.length; i++) {
+          const q = selectedQuestions[i];
           if (!q.question || !Array.isArray(q.choices) || typeof q.answer !== 'number') {
-            throw new Error(`問題${i + 1}に不正な形式があります`);
+            throw new Error(`問題データが不正です（${i + 1}問目）`);
           }
         }
 
+        questions = selectedQuestions;
         showQuestion();
       } catch (error) {
-        container.innerHTML = '<p>問題データの読み込みに失敗しました。</p>';
+        container.innerHTML = `<p>問題データの読み込みに失敗しました。</p>`;
         console.error(error);
       }
     }
