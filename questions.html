@@ -29,7 +29,7 @@
 
     async function loadQuestions() {
       try {
-        const response = await fetch(`questions_${examRound}.json`); // 修正済みファイル名
+        const response = await fetch(`main/main_questions_${examRound}.json`);
         if (!response.ok) throw new Error(`ファイルが見つからないか、読み込めませんでした`);
         const allQuestions = await response.json();
 
