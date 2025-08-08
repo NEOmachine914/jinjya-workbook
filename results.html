@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>結果発表</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body id="page-results">
   <div class="container">
     <h1>結果発表</h1>
+
     <div id="score-summary" class="result-box">
       <p><strong>名前:</strong> <span id="result-username"></span></p>
       <p><strong>正解数:</strong> <span id="correct-count"></span> / <span id="total-count"></span></p>
@@ -18,11 +19,12 @@
 
     <div id="mistake-summary" class="result-box">
       <h2>間違えた問題</h2>
-      <div id="wrong-questions-list"></div>
+      <ul id="wrong-questions-list"></ul>
     </div>
-    
-    <button id="retry-button">トップに戻る</button>
+
+    <button id="retry-button" class="btn">トップに戻る</button>
   </div>
+
   <script src="main.js" defer></script>
 </body>
 </html>
