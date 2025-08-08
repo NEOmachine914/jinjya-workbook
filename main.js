@@ -1,39 +1,191 @@
-// main.js（最小構成・完成版）
-// 画面ごとに処理を分岐：index.html / questions.html / results.html
-
+// main.js  — 3画面共通。URLではなく要素の存在でページ判定します。
 document.addEventListener('DOMContentLoaded', () => {
-  const path = location.pathname;
+  const $ = (sel, root = document) => root.querySelector(sel);
+  const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 
-  // ===== ① トップ画面（index.html） =====
-  if (path.endsWith('/') || path.endsWith('/index.html')) {
-    const form = document.getElementById('start-form');
-    if (!form) return;
-
-    form.addEventListener('submit', (e) => {
+  // =========================
+  // ① トップ画面（開始）
+  // =========================
+  const startForm = $('#start-form');
+  if (startForm) {
+    startForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      const username = document.getElementById('username').value.trim();
-
+      const username = ($('#username')?.value || '').trim();
       if (!username) {
-        alert('名前を入力してください。');
+        alert('名前を入力してください');
         return;
       }
-
-      // 最小構成：第12回／100問固定
+      // 最小構成：第12回・100問固定
       sessionStorage.setItem('username', username);
       sessionStorage.setItem('examRound', '12');
       sessionStorage.setItem('questionCount', '100');
-
-      // 念のため初期化
-      sessionStorage.removeItem('score');
-      sessionStorage.removeItem('total');
-      sessionStorage.removeItem('wrongList');
-
-      window.location.href = 'questions.html';
+      location.href = 'questions.html';
     });
+    return; // 他の画面処理は走らせない
+  }
+
+  // =========================
+  // ② 出題画面
+  // =========================
+  const quizContainer = $('#quiz-container');
+  if (quizContainer) {
+    const username = sessionStorage.getItem('username') || '';
+    const examRound = sessionStorage.getItem('examRound') || '12';
+    const questionCount = parseInt(sessionStorage.getItem('questionCount') || '100', 10);
+
+    if (!username) {
+      quizContainer.innerHTML = '<p>エラー：必要なデータが見つかりません。最初からやり直してください。</p>';
+      return;
+    }
+
+    // 出題データの読み込み
+    (async () => {
+      try {
+        const res = await fetch(`main_questions_${examRound}.json?ts=${Date.now()}`);
+        if (!res.ok) throw new Error('問題ファイルが読み込めませんでした。');
+        const raw = await res.json();
+        // グループを平坦化し、common_text を各グループの最初の設問にだけ載せる
+        const flat = [];
+        raw.forEach(group => {
+          const ct = (group.common_text || '').trim();
+          (group.questions || []).forEach((q, idx) => {
+            const copy = { ...q };
+            if (ct && idx === 0) copy.common_text = ct;
+            flat.push(copy);
+          });
+        });
+
+        const total = Math.min(questionCount, flat.length);
+        const questions = flat.slice(0, total); // 最小構成：並び固定（必要ならここでシャッフル可）
+
+        let current = 0;
+        let score = 0;
+        const wrongs = [];
+
+        const render = () => {
+          if (current >= questions.length) {
+            // 結果保存 → 結果画面へ
+            sessionStorage.setItem('result-username', username);
+            sessionStorage.setItem('correct-count', String(score));
+            sessionStorage.setItem('total-count', String(questions.length));
+            sessionStorage.setItem('wrongs', JSON.stringify(wrongs));
+            location.href = 'results.html';
+            return;
+          }
+
+          const q = questions[current];
+
+          let html = `
+            <div class="container">
+              <div id="question-box">
+                <div id="question-number">問${current + 1} / 全${questions.length}問</div>
+          `;
+          if (q.common_text) {
+            html += `<div class="common-text">${q.common_text}</div>`;
+          }
+          html += `
+                <div id="question-text">${q.question}</div>
+                <div class="options-grid">
+          `;
+          q.choices.forEach((choice, i) => {
+            html += `<button class="option-btn" data-idx="${i}">${choice}</button>`;
+          });
+          html += `
+                </div>
+                <div class="feedback-container"><span id="feedback-message"></span></div>
+              </div>
+            </div>
+          `;
+
+          quizContainer.innerHTML = html;
+
+          // 回答処理
+          $$('.option-btn', quizContainer).forEach(btn => {
+            btn.addEventListener('click', () => {
+              const selected = Number(btn.dataset.idx);
+              const isCorrect = selected === q.answer; // JSONのanswerは0始まり
+              const feedback = $('#feedback-message', quizContainer);
+
+              // ボタン状態更新
+              $$('.option-btn', quizContainer).forEach((b, idx) => {
+                b.disabled = true;
+                if (idx === q.answer) b.classList.add('correct');
+                if (idx === selected && !isCorrect) b.classList.add('incorrect');
+              });
+
+              if (isCorrect) {
+                score++;
+                feedback.textContent = '正解！';
+                feedback.className = 'correct';
+              } else {
+                feedback.textContent = '不正解…';
+                feedback.className = 'incorrect';
+                wrongs.push({
+                  question: q.question,
+                  correct: q.choices[q.answer],
+                  user: q.choices[selected]
+                });
+              }
+
+              // 少し待って次へ
+              setTimeout(() => {
+                current++;
+                render();
+              }, 650);
+            });
+          });
+        };
+
+        render();
+      } catch (err) {
+        console.error(err);
+        quizContainer.innerHTML = '<p>問題データの読み込みに失敗しました。</p>';
+      }
+    })();
+
     return;
   }
 
-  // ===== ② 出題画面（questions.html） =====
+  // =========================
+  // ③ 結果画面
+  // =========================
+  const resultRoot = $('#page-results');
+  if (resultRoot) {
+    const username = sessionStorage.getItem('result-username') || '';
+    const correct = parseInt(sessionStorage.getItem('correct-count') || '0', 10);
+    const total = parseInt(sessionStorage.getItem('total-count') || '0', 10);
+    const wrongs = JSON.parse(sessionStorage.getItem('wrongs') || '[]');
+
+    $('#result-username').textContent = username || '—';
+    $('#correct-count').textContent = String(correct);
+    $('#total-count').textContent = String(total);
+
+    const rate = total ? Math.round((correct / total) * 100) : 0;
+    $('#accuracy-rate').textContent = String(rate);
+    const judgeEl = $('#result-judgment');
+    const pass = rate >= 70;
+    judgeEl.textContent = pass ? '合格' : '不合格';
+    judgeEl.className = `judgment ${pass ? 'pass' : 'fail'}`;
+
+    const list = $('#wrong-questions-list');
+    if (wrongs.length === 0) {
+      list.innerHTML = '<p>全問正解でした！</p>';
+    } else {
+      list.innerHTML = wrongs.map(w => `
+        <div class="wrong-question-item">
+          <div class="wrong-q-text">Q. ${w.question}</div>
+          <div class="wrong-q-answer">正解：${w.correct}</div>
+          <div class="wrong-q-user-answer">あなたの回答：${w.user}</div>
+        </div>
+      `).join('');
+    }
+
+    $('#retry-button')?.addEventListener('click', () => {
+      // もう一度最初から
+      location.href = 'index.html';
+    });
+  }
+});
   if (path.endsWith('/questions.html')) {
     const container = document.getElementById('quiz-container');
     if (!container) return;
