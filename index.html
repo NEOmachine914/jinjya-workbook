@@ -8,15 +8,21 @@
 </head>
 <body id="page-index">
   <div class="container">
-    <h1>神社検定クイズへようこそ</h1>
+    <h1>神社検定クイズ</h1>
+
     <form id="start-form">
-      <label for="username">名前：</label>
-      <input type="text" id="username" required /><br />
-      <!-- 今回は 12回・100問を固定（JS 側でセット） -->
-      <button type="submit" id="start-btn">開始</button>
+      <div class="form-group">
+        <label for="username">名前：</label>
+        <input type="text" id="username" required />
+      </div>
+
+      <!-- 必要ならここを編集して既定値を変えられます -->
+      <input type="hidden" id="examRound" value="12" />
+      <input type="hidden" id="questionCount" value="100" />
+
+      <button type="submit" class="btn">開始</button>
     </form>
   </div>
-  <!-- 重要：必ず最後で defer 読み込み -->
-  <script src="./main.js" defer></script>
+  <script src="main.js" defer></script>
 </body>
 </html>
