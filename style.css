@@ -144,7 +144,6 @@ select:focus {
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.2s;
-  color: #333 !important; /* ← 追加：選択肢ボタンの文字色を黒系に固定 */
 }
 
 .option-btn:hover:enabled {
@@ -221,4 +220,26 @@ select:focus {
 
 #retry-button {
     margin-top: 1rem;
+}
+
+/* ===== ここからが今回の対策（indexページだけ縦積み） ===== */
+
+/* index.html の <body id="page-index"> にだけ適用し、
+   コンテナが横並びにならないようにする */
+#page-index {
+  display: block;            /* body の flex を解除して縦積み */
+}
+
+#page-index .container {
+  margin: 0 auto 16px;       /* 中央寄せ＋下マージン */
+}
+
+/* ついでにスマホ時の余白を少し詰める */
+@media (max-width: 640px) {
+  body {
+    padding: 1.25rem 0.75rem;
+  }
+  .container {
+    padding: 1.25rem;
+  }
 }
