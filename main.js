@@ -4,6 +4,13 @@ const BASE_TITLE = '神社検定壱級第12回過去問題';
 // ===== 共通ユーティリティ =====
 const $ = (sel) => document.querySelector(sel);
 const on = (el, ev, fn) => el && el.addEventListener(ev, fn);
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
 
 // ===== 入口 =====
 document.addEventListener('DOMContentLoaded', () => {
@@ -34,6 +41,9 @@ function initIndex() {
 
     location.href = 'questions.html';
   });
+
+  // 今日の一問（毎日ランダム・その日中は固定）
+  renderDailyQuestion(12);
 }
 
 // ===== questions.html =====
@@ -228,10 +238,101 @@ function initResults() {
   on($('#retry-button'), 'click', () => (location.href = 'index.html'));
 }
 
-function escapeHtml(s) {
-  return String(s)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+// ===== 今日の一問（毎日ランダム・その日中は固定） =====
+
+// JSTで“今日”の通し日数
+function getJstDayNumber() {
+  const now = new Date();
+  const utcMs = now.getTime() + now.getTimezoneOffset() * 60000;
+  const jstMs = utcMs + 9 * 60 * 60000;
+  return Math.floor(jstMs / 86400000); // 1970/1/1からの日数
+}
+
+// 軽量なシード付きPRNG（mulberry32）
+function mulberry32(a) {
+  return function () {
+    let t = (a += 0x6D2B79F5);
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+async function renderDailyQuestion(round = 12) {
+  const dailySection = document.getElementById('daily-quiz');
+  const box = document.getElementById('daily-question-box');
+  if (!dailySection || !box) return;
+
+  try {
+    const res = await fetch(`main_questions_${round}.json`, { cache: 'no-store' });
+    if (!res.ok) throw new Error('JSONが読み込めませんでした');
+    const groups = await res.json();
+
+    // グループを1問ずつへフラット化（answerは1/0両対応に正規化）
+    const all = [];
+    groups.forEach(g => {
+      const common = g.common_text || null;
+      (g.questions || []).forEach(q => {
+        const choices = q.choices || [];
+        const rawAns = Number(q.answer);
+        let correctIndex = null;
+        if (!Number.isNaN(rawAns)) {
+          if (rawAns >= 1 && rawAns <= choices.length) correctIndex = rawAns - 1; // 1-based
+          else if (rawAns >= 0 && rawAns < choices.length) correctIndex = rawAns; // 0-based
+        }
+        all.push({
+          common_text: common,
+          question: q.question,
+          choices,
+          correctIndex
+        });
+      });
+    });
+    if (all.length === 0) return;
+
+    // “毎日ランダム”：日数をseedにして、その日の間は固定
+    const day = getJstDayNumber();
+    const rng = mulberry32(day ^ 0x9E3779B9); // 適当なスパイス
+    const idx = Math.floor(rng() * all.length);
+    const q = all[idx];
+
+    // 描画
+    const common = q.common_text
+      ? `<div class="common-text">${escapeHtml(q.common_text)}</div>`
+      : '';
+
+    box.innerHTML = `
+      ${common}
+      <div class="question" style="margin:8px 0 12px;font-weight:600;">
+        ${escapeHtml(q.question)}
+      </div>
+      <ul id="daily-options" class="options-grid"></ul>
+      <div class="feedback-container"><span id="daily-feedback"></span></div>
+    `;
+
+    const ul = box.querySelector('#daily-options');
+    q.choices.forEach((choice, i) => {
+      const li = document.createElement('li');
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.textContent = choice;
+      btn.addEventListener('click', () => {
+        // 1回で確定
+        [...ul.querySelectorAll('.option-btn')].forEach(b => (b.disabled = true));
+        const correct = i === q.correctIndex;
+        btn.classList.add(correct ? 'correct' : 'incorrect');
+        const fb = box.querySelector('#daily-feedback');
+        fb.textContent = correct
+          ? '正解！'
+          : `不正解… 正解は「${q.choices[q.correctIndex]}」`;
+        fb.className = correct ? 'correct' : 'incorrect';
+      });
+      li.appendChild(btn);
+      ul.appendChild(li);
+    });
+
+    dailySection.style.display = 'block';
+  } catch (e) {
+    console.error('今日の一問の読み込みに失敗:', e);
+  }
 }
