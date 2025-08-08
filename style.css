@@ -144,6 +144,7 @@ select:focus {
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.2s;
+  color: #333 !important; /* ← 追加：選択肢ボタンの文字色を黒系に固定 */
 }
 
 .option-btn:hover:enabled {
@@ -176,7 +177,6 @@ select:focus {
 }
 #feedback-message.correct { color: #28a745; }
 #feedback-message.incorrect { color: #dc3545; }
-
 
 /* 結果ページ */
 .result-box {
