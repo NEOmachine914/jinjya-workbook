@@ -1,39 +1,25 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>神社検定2のテスト - 問題</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>神社検定クイズ - 出題</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
-<body>
-  <div id="quiz-container">
-    <!-- ここに問題と選択肢が表示されます -->
+<body id="page-questions">
+  <div class="container">
+    <div id="progress-bar-container"><div id="progress-bar"></div></div>
+    <div id="question-box">
+      <div id="question-number"></div>
+      <div id="common-text" class="common-text" style="display:none;"></div>
+      <div id="question-text"></div>
+      <div id="options" class="options-grid"></div>
+      <div class="feedback-container"><span id="feedback-message"></span></div>
+    </div>
   </div>
-
-  <script>
-    // セッションストレージの値を取得
-    const username = sessionStorage.getItem('username');
-    const examRound = sessionStorage.getItem('examRound');
-    const questionCount = parseInt(sessionStorage.getItem('questionCount'));
-
-    // デバッグ表示（開発中のみ有効に）
-    console.log('sessionStorage:', { username, examRound, questionCount });
-
-    // 値が不足している場合の処理
-    if (!username || !examRound || isNaN(questionCount)) {
-      document.body.innerHTML = '<p>エラー：必要なデータが見つかりません。最初からやり直してください。</p>';
-      throw new Error("Missing sessionStorage values");
-    }
-
-    const container = document.getElementById("quiz-container");
-    container.innerHTML = `<p>${username} さん（第${examRound}回）の試験を ${questionCount} 問で開始します。</p>`;
-
-    let currentIndex = 0;
-    let score = 0;
-    let questions = [];
-
-    async function loadQuestions() {
-      try {
+  <script src="main.js" defer></script>
+</body>
+</html>
         const response = await fetch(`main_questions_${examRound}.json`);
         if (!response.ok) throw new Error(`ファイルが見つからないか、読み込めませんでした`);
         const allQuestions = await response.json();
