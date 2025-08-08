@@ -1,3 +1,6 @@
+// ===== タイトル共通文言 =====
+const BASE_TITLE = '神社検定壱級第12回過去問題';
+
 // ===== 共通ユーティリティ =====
 const $ = (sel) => document.querySelector(sel);
 const on = (el, ev, fn) => el && el.addEventListener(ev, fn);
@@ -12,6 +15,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ===== index.html =====
 function initIndex() {
+  document.title = `${BASE_TITLE} - 開始`;
+
   const form = $('#start-form');
   on(form, 'submit', (e) => {
     e.preventDefault();
@@ -33,6 +38,8 @@ function initIndex() {
 
 // ===== questions.html =====
 async function initQuestions() {
+  document.title = `${BASE_TITLE} - 出題中`;
+
   const username = sessionStorage.getItem('username');
   const examRound = sessionStorage.getItem('examRound');
   const questionCount = parseInt(sessionStorage.getItem('questionCount') || '0', 10);
@@ -177,6 +184,8 @@ async function initQuestions() {
 
 // ===== results.html =====
 function initResults() {
+  document.title = `${BASE_TITLE} - 結果発表`;
+
   const username = sessionStorage.getItem('username');
   const correct = parseInt(sessionStorage.getItem('correctCount') || '0', 10);
   const total = parseInt(sessionStorage.getItem('totalCount') || '0', 10);
