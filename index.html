@@ -6,34 +6,18 @@
   <title>神社検定クイズ - 開始</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body>
-  <h1>神社検定クイズへようこそ</h1>
-  <form id="start-form">
-    <label for="username">名前：</label>
-    <input type="text" id="username" required /><br />
-
-    <label for="examRound">試験回（例：12）：</label>
-    <input type="number" id="examRound" required /><br />
-
-    <label for="questionCount">出題数（10, 50, 100）：</label>
-    <input type="number" id="questionCount" required /><br />
-
-    <button type="submit">開始</button>
-  </form>
-
-  <script>
-    document.getElementById("start-form").addEventListener("submit", function (e) {
-      e.preventDefault();
-      const username = document.getElementById("username").value;
-      const examRound = document.getElementById("examRound").value;
-      const questionCount = document.getElementById("questionCount").value;
-
-      // sessionStorage に保存
-      sessionStorage.setItem("username", username);
-      sessionStorage.setItem("examRound", examRound);
-      sessionStorage.setItem("questionCount", questionCount);
-
-      // デバッグ用ログ
+<body id="page-index">
+  <div class="container">
+    <h1>神社検定クイズ</h1>
+    <div class="form-group">
+      <label for="username">名前：</label>
+      <input type="text" id="username" placeholder="例）山田太郎" />
+    </div>
+    <button id="start-btn" class="btn">開始</button>
+  </div>
+  <script src="main.js" defer></script>
+</body>
+</html>
       console.log("保存した値:", { username, examRound, questionCount });
 
       // 次のページへ遷移
