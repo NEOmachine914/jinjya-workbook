@@ -7,18 +7,28 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body id="page-index">
-  <h1>神社検定壱級第12回過去問題</h1>
+  <div class="container">
+    <h1>神社検定壱級第12回過去問題</h1>
 
-  <form id="start-form">
-    <label for="username">名前：</label>
-    <input type="text" id="username" required /><br />
+    <form id="start-form">
+      <div class="form-group">
+        <label for="username">名前：</label>
+        <input type="text" id="username" required />
+      </div>
 
-    <!-- 画面に出さない既定値（main.jsそのままで動きます） -->
-    <input type="hidden" id="examRound" value="12" />
-    <input type="hidden" id="questionCount" value="100" />
+      <!-- 画面に出さない既定値 -->
+      <input type="hidden" id="examRound" value="12" />
+      <input type="hidden" id="questionCount" value="100" />
 
-    <button type="submit">開始</button>
-  </form>
+      <button type="submit" class="btn">開始</button>
+    </form>
+  </div>
+
+  <!-- 今日の一問（スコアには含めない） -->
+  <section id="daily-quiz" class="container" style="margin-top:24px; display:none;">
+    <h2 style="text-align:center; margin:0 0 12px;">今日の一問（スコアには含まれません）</h2>
+    <div id="daily-question-box"></div>
+  </section>
 
   <script src="main.js" defer></script>
 </body>
