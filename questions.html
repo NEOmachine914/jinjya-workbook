@@ -1,23 +1,29 @@
-<!-- 正: これだけにする -->
 <!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>神社検定クイズ - 出題</title>
+  <title>出題</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body id="page-questions"> 
+<body id="page-questions">
   <div class="container">
+    <h1>問題</h1>
+
     <div id="progress-bar-container"><div id="progress-bar"></div></div>
+
     <div id="question-box">
+      <div id="common-text" class="common-text" style="display:none"></div>
       <div id="question-number"></div>
-      <div id="common-text" class="common-text" style="display:none;"></div>
       <div id="question-text"></div>
       <div id="options" class="options-grid"></div>
-      <div class="feedback-container"><span id="feedback-message"></span></div>
+
+      <div class="feedback-container">
+        <span id="feedback-message"></span>
+      </div>
     </div>
   </div>
+
   <script src="main.js" defer></script>
 </body>
 </html>
