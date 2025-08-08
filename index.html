@@ -6,15 +6,17 @@
   <title>神社検定クイズ - 開始</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body id="page-index">
+<body>
   <div class="container">
-    <h1>神社検定クイズ</h1>
-    <div class="form-group">
+    <h1>神社検定クイズへようこそ</h1>
+    <form id="start-form">
       <label for="username">名前：</label>
-      <input type="text" id="username" placeholder="例）山田太郎" required />
-    </div>
-    <button id="start-btn" class="btn">開始</button>
+      <input type="text" id="username" required /><br />
+      <!-- 今回は 12回・100問を固定（JS 側でセット） -->
+      <button type="submit" id="start-btn">開始</button>
+    </form>
   </div>
-  <script src="main.js" defer></script>
+  <!-- 重要：必ず最後で defer 読み込み -->
+  <script src="./main.js" defer></script>
 </body>
 </html>
