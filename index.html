@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>神社検定クイズ - 開始</title>
+  <title>神社検定壱級第12回過去問題 - 開始</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body id="page-index">
   <div class="container">
-    <h1>神社検定クイズ</h1>
+    <h1>神社検定壱級第12回過去問題</h1>
 
     <form id="start-form">
       <div class="form-group">
@@ -16,13 +16,20 @@
         <input type="text" id="username" required />
       </div>
 
-      <!-- 必要ならここを編集して既定値を変えられます -->
-      <input type="hidden" id="examRound" value="12" />
-      <input type="hidden" id="questionCount" value="100" />
+      <div class="form-group">
+        <label for="examRound">試験回（例：12）：</label>
+        <input type="number" id="examRound" required />
+      </div>
 
-      <button type="submit" class="btn">開始</button>
+      <div class="form-group">
+        <label for="questionCount">出題数（10, 50, 100）：</label>
+        <input type="number" id="questionCount" required />
+      </div>
+
+      <button type="submit">開始</button>
     </form>
   </div>
+
   <script src="main.js" defer></script>
 </body>
 </html>
