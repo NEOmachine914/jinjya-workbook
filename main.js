@@ -5,7 +5,6 @@ const on = (el, ev, fn) => el && el.addEventListener(ev, fn);
 // ===== 入口 =====
 document.addEventListener('DOMContentLoaded', () => {
   const page = document.body.id;
-
   if (page === 'page-index') initIndex();
   if (page === 'page-questions') initQuestions();
   if (page === 'page-results') initResults();
@@ -21,7 +20,6 @@ function initIndex() {
       alert('名前を入力してください');
       return;
     }
-    // hidden の既定値（必要に応じて index.html 側で変更可）
     const examRound = parseInt($('#examRound')?.value || '12', 10);
     const questionCount = parseInt($('#questionCount')?.value || '100', 10);
 
@@ -44,7 +42,6 @@ async function initQuestions() {
     return;
   }
 
-  // 画面要素
   const $common = $('#common-text');
   const $qNo = $('#question-number');
   const $qText = $('#question-text');
@@ -52,7 +49,6 @@ async function initQuestions() {
   const $feedback = $('#feedback-message');
   const $bar = $('#progress-bar');
 
-  // 問題データ読み込み（ファイル名は main_questions_xx.json）
   const file = `main_questions_${examRound}.json`;
   let groups;
   try {
@@ -64,35 +60,40 @@ async function initQuestions() {
     return;
   }
 
-  // グループ構造 → 1問ずつの配列へフラット化
+  // グループ→設問へフラット化（answerの1/0始まり両対応）
   const allQuestions = [];
   for (const g of groups) {
     const commonText = g.common_text || null;
     for (const q of g.questions || []) {
+      const choices = q.choices || [];
+      const rawAns = Number(q.answer);
+      let correctIndex = null;
+      if (!Number.isNaN(rawAns)) {
+        if (rawAns >= 1 && rawAns <= choices.length) correctIndex = rawAns - 1; // 1始まり
+        else if (rawAns >= 0 && rawAns < choices.length) correctIndex = rawAns; // 0始まり
+      }
       allQuestions.push({
         groupId: g.group_id || '',
         commonText,
         question: q.question,
-        choices: q.choices,
-        answer: q.answer, // ※JSONが0始まり想定（既存データに合わせる）
+        choices,
+        correctIndex,
         explanation: q.explanation || '',
         attribute: q.attribute || ''
       });
     }
   }
 
-  // 指定数だけ取り出し
   const selected = allQuestions.slice(0, questionCount);
 
   let idx = 0;
   let score = 0;
-  const mistakes = []; // {question, correct, user, commonText}
+  const mistakes = [];
 
   render();
 
   function render() {
     if (idx >= selected.length) {
-      // 結果保存 → results へ
       sessionStorage.setItem('correctCount', String(score));
       sessionStorage.setItem('totalCount', String(selected.length));
       sessionStorage.setItem('mistakes', JSON.stringify(mistakes));
@@ -102,11 +103,9 @@ async function initQuestions() {
 
     const q = selected[idx];
 
-    // 進捗バー
     const pct = Math.round((idx / selected.length) * 100);
     if ($bar) $bar.style.width = `${pct}%`;
 
-    // 共通文
     if (q.commonText) {
       $common.style.display = 'block';
       $common.textContent = q.commonText;
@@ -115,11 +114,9 @@ async function initQuestions() {
       $common.textContent = '';
     }
 
-    // 番号・本文
     $qNo.textContent = `問 ${idx + 1} / 全${selected.length}問`;
     $qText.textContent = q.question;
 
-    // 選択肢
     $options.innerHTML = '';
     q.choices.forEach((choice, i) => {
       const btn = document.createElement('button');
@@ -130,39 +127,38 @@ async function initQuestions() {
       $options.appendChild(btn);
     });
 
-    // フィードバック消去
     $feedback.textContent = '';
     $feedback.className = '';
   }
 
   function answer(selectedIndex) {
     const q = selected[idx];
-    const correct = selectedIndex === q.answer; // ※0始まり前提
+    const correctIdx = q.correctIndex;
     const btns = [...$options.querySelectorAll('button')];
 
     btns.forEach((b) => (b.disabled = true));
-    if (correct) {
+
+    if (selectedIndex === correctIdx) {
       score++;
       btns[selectedIndex].classList.add('correct');
       $feedback.textContent = '正解！';
       $feedback.className = 'correct';
     } else {
       btns[selectedIndex].classList.add('incorrect');
-      if (typeof q.answer === 'number' && btns[q.answer]) {
-        btns[q.answer].classList.add('correct');
+      if (typeof correctIdx === 'number' && btns[correctIdx]) {
+        btns[correctIdx].classList.add('correct');
       }
       $feedback.textContent = '不正解…';
       $feedback.className = 'incorrect';
 
       mistakes.push({
         question: q.question,
-        correct: q.choices[q.answer],
+        correct: q.choices[correctIdx],
         user: q.choices[selectedIndex],
         commonText: q.commonText || ''
       });
     }
 
-    // 次へ
     setTimeout(() => {
       idx++;
       render();
